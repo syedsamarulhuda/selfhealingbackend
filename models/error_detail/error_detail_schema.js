@@ -12,7 +12,7 @@ var dbConfig = config.get('MongoDatabaseSettings');
  console.log(mongoString);
  mongoose.connect(mongoString);*/
 
-mongoose.connect('mongodb://' + dbConfig.username + ':' + dbConfig.password + '@' + dbConfig.host + '/' + dbConfig.database, function (error) {
+mongoose.createConnection('mongodb://' + dbConfig.username + ':' + dbConfig.password + '@' + dbConfig.host + '/' + dbConfig.database, function (error) {
 
     if (error) {
         console.log(error);
@@ -71,4 +71,4 @@ var errorDetailSchema = mongoose.Schema(
     });
 
 
-module.exports = mongoose.model('error_details', errorDetailSchema);
+var ErrorDetails = module.exports = mongoose.model('error_details', errorDetailSchema);

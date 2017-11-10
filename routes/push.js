@@ -13,13 +13,14 @@ var FirebasePn= require('../models/firebase/firebase_send_pn')
 
 router.get('/api/self_healing_app_details/', function (req, res) {
 
-
+console.log('here')
     AppDetails.getAppDetail(function (err, appDetails) {
         if (err) {
-            throw err;
+            sendResponse.sendErrorData(err,'Err',res)
 
+        }else{
+            sendResponse.sendSuccessData(appDetails, res);
         }
-        sendResponse.sendSuccessData(appDetails, res);
     })
 
 });

@@ -15,7 +15,7 @@
     "fcm-push-notif": "^1.2.1",
     "firebase-admin": "^5.2.1",
     "mongodb": "*",
-    "mongoose": "^4.11.0",
+    "mongoose": "4.11.0",
     "uniqid": "^4.1.1"
   },
   "author": "syed samarul huda",
