@@ -1,0 +1,23 @@
+{
+  "name": "self_healing_backend",
+  "version": "1.0.0",
+  "description": "detects backend api error and assigns it to respected team",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "config": "^1.16.0",
+    "email-validator": "^1.1.1",
+    "express": "*",
+    "fcm-node": "^1.2.0",
+    "fcm-push-notif": "^1.2.1",
+    "firebase-admin": "^5.2.1",
+    "mongodb": "*",
+    "mongoose": "^4.11.0",
+    "uniqid": "^4.1.1"
+  },
+  "author": "syed samarul huda",
+  "license": "ISC"
+}

@@ -1,0 +1,9 @@
+{
+ 	"MongoDatabaseSettings": {
+    "host": "mongodb://localhost:",
+    "port":"27017",
+    "database": "self_healing_app",
+    "username": "",
+    "password": ""
+  }
+}

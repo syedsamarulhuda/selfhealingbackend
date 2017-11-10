@@ -1,0 +1,9 @@
+{
+  "MongoDatabaseSettings": {
+    "host": "mongo-staging.flyrobeapp.com:",
+    "port":"27017",
+    "database": "firebase_app",
+    "username": "flyrobefirebaseappadmin",
+    "password": "dateyourfashion"
+  }
+}
