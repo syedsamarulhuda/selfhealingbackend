@@ -10,6 +10,13 @@ module.exports.getErrorDetail = function (callback) {
     ErrorDetails.find(callback);
 }
 
+
+module.exports.getErrorDetailById = function (errorId,callback) {
+
+    var query = {error_id: errorId};
+    ErrorDetails.find(query,callback);
+}
+
 module.exports.addErrorDetail = function (app_detail, callback) {
     ErrorDetails.create(app_detail, callback);
 }

@@ -139,6 +139,24 @@ router.post('/api/dev_login/', function (req, res) {
 });
 
 
+router.get('/api/get_error/:errorId', function (req, res) {
+
+    var errorId = req.params.errorId;
+
+    ErrorDetails.getErrorDetailById(errorId,function (err, appDetails) {
+        if (err) {
+            throw err;
+
+        }
+        sendResponse.sendSuccessData(appDetails, res);
+    })
+
+});
+
+
+
+
+
 function sendErrorPnToDev(errorId, token) {
 
     var deviceToken = token;
