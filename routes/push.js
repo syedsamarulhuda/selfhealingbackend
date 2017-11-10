@@ -8,17 +8,17 @@ var router = express.Router();
 var sendResponse = require('./sendResponse');
 var AppDetails = require('../models/app_detail/get_app_details');
 var ErrorDetails = require('../models/error_detail/get_error_details');
-var FirebasePn= require('../models/firebase/firebase_send_pn')
+var FirebasePn = require('../models/firebase/firebase_send_pn');
+var DevDetails = require('../models/dev_detail/get_dev_detail')
 
 
 router.get('/api/self_healing_app_details/', function (req, res) {
 
-console.log('here -')
     AppDetails.getAppDetail(function (err, appDetails) {
         if (err) {
-            sendResponse.sendErrorData(err,'Err',res)
+            sendResponse.sendErrorData(err, 'Err', res)
 
-        }else{
+        } else {
             sendResponse.sendSuccessData(appDetails, res);
         }
     })
@@ -31,7 +31,7 @@ router.post('/api/register_app_detail/', function (req, res) {
     var appUniqueId = uniqueId();
     var app_detail = req.body;
 
-    app_detail["app_id"]=appUniqueId;
+    app_detail["app_id"] = appUniqueId;
 
 
     AppDetails.addAppDetail(app_detail, function (err, app_detail) {
@@ -51,7 +51,7 @@ router.post('/api/catch_error/', function (req, res) {
 
     var error_detail = req.body;
 
-    error_detail["isResolved"]=false;
+    error_detail["isResolved"] = false;
 
 
     ErrorDetails.addErrorDetail(error_detail, function (err, error_detail) {
@@ -59,7 +59,7 @@ router.post('/api/catch_error/', function (req, res) {
             sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
         } else {
             sendResponse.sendSuccessData(error_detail, res);
-            sendErrorPn(error_detail.error_id,error_detail.device_token);
+            sendErrorPnToDev(error_detail.error_id, error_detail.device_token);
 
         }
 
@@ -83,7 +83,6 @@ router.get('/api/get_error_list/', function (req, res) {
 });
 
 
-
 router.put('/api/error_resolved/:errorId', function (req, res) {
 
     var reqBody = req.body;
@@ -101,7 +100,46 @@ router.put('/api/error_resolved/:errorId', function (req, res) {
 });
 
 
-function sendErrorPn(errorId,token) {
+router.post('/api/dev_sign_up/', function (req, res) {
+
+    var dev_detail = req.body;
+    DevDetails.devSignUp(dev_detail, function (err, error_detail) {
+        if (err) {
+            sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
+        } else {
+            sendResponse.sendSuccessData(error_detail, res);
+
+        }
+
+    })
+
+
+});
+
+
+router.post('/api/dev_login/', function (req, res) {
+
+    var dev_detail = req.body;
+
+    var username = dev_detail.username;
+    var password = dev_detail.password;
+
+
+    DevDetails.devLogin(username, password, function (err, dev_detail) {
+        if (err) {
+            sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
+        } else {
+            sendResponse.sendSuccessData(dev_detail, res);
+
+        }
+
+    })
+
+
+});
+
+
+function sendErrorPnToDev(errorId, token) {
 
     var deviceToken = token;
 
@@ -118,7 +156,7 @@ function sendErrorPn(errorId,token) {
         timeToLive: 60 * 60 * 24
     };
 
-    FirebasePn.sendFirebasePN(payload,deviceToken,option);
+    FirebasePn.sendFirebasePN(payload, deviceToken, option);
 }
 
 
