@@ -50,6 +50,10 @@ router.post('/api/register_app_detail/', function (req, res) {
 router.post('/api/catch_error/', function (req, res) {
 
     var error_detail = req.body;
+    var apiName = error_detail.api_name;
+    var apiId = error_detail.api_id;
+    var errorCode = error_detail.error_code;
+    var isResolved = error_detail.isResolved ? "true" : "false";
 
     error_detail["isResolved"] = false;
 
@@ -59,7 +63,7 @@ router.post('/api/catch_error/', function (req, res) {
             sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
         } else {
             sendResponse.sendSuccessData(error_detail, res);
-            sendErrorPnToDev(error_detail.error_id);
+            sendErrorPnToDev(error_detail.error_id, apiName, apiId, errorCode, isResolved);
 
         }
 
@@ -155,6 +159,24 @@ router.get('/api/get_error/:errorId', function (req, res) {
 });
 
 
+router.get('/api/get_error/:api_id/:error_code/:isResolved', function (req, res) {
+
+    var apiId = req.params.api_id;
+    var errorCode = req.params.error_code;
+    var isResolved = req.params.isResolved;
+
+    console.log(apiId + "-" + errorCode + "-" + isResolved);
+
+    ErrorDetails.getErrorDetailSegregate(apiId, errorCode, isResolved, function (err, appDetails) {
+        if (err) {
+            throw err;
+
+        }
+        sendResponse.sendSuccessData(appDetails, res);
+    })
+
+});
+
 function sendErrorResolvedPnToUser(errorId) {
 
     // var deviceToken = token;
@@ -188,15 +210,19 @@ function sendErrorResolvedPnToUser(errorId) {
 }
 
 
-function sendErrorPnToDev(errorId) {
+function sendErrorPnToDev(errorId, apiName, apiId, errorCode, isResolved) {
 
     // var deviceToken = token;
 
     var payload = {
         data: {
             errorId: errorId,
-            title: "Testing",
-            body: "Testing 123"
+            title: "Crash Report",
+            body: "Api " + "\"" + apiName + "\"" + " has error",
+            apiId: apiId.toString(),
+            errorCode: errorCode.toString(),
+            isResolved: isResolved
+
         }
     };
 

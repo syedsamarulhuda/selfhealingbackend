@@ -26,6 +26,8 @@ app.get('/api/get_error_list/', push);
 
 app.get('/api/get_error/:errorId', push);
 
+app.get('/api/get_error/:api_id/:error_code/:isResolved', push);
+
 app.put('/api/error_resolved/:errorId',push);
 
 app.post('/api/dev_sign_up/', push);

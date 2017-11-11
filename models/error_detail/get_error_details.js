@@ -11,11 +11,22 @@ module.exports.getErrorDetail = function (callback) {
 }
 
 
-module.exports.getErrorDetailById = function (errorId,callback) {
+module.exports.getErrorDetailById = function (errorId, callback) {
 
     var query = {error_id: errorId};
-    ErrorDetails.find(query,callback);
+    ErrorDetails.find(query, callback);
 }
+
+module.exports.getErrorDetailSegregate = function (apiId, errorCode, isResolved, callback) {
+
+    var query = {
+        api_id: apiId,
+        isResolved: isResolved,
+        error_code: errorCode
+    };
+    ErrorDetails.find(query, callback);
+}
+
 
 module.exports.addErrorDetail = function (app_detail, callback) {
     ErrorDetails.create(app_detail, callback);
