@@ -32,14 +32,16 @@ module.exports.addErrorDetail = function (app_detail, callback) {
     ErrorDetails.create(app_detail, callback);
 }
 
-module.exports.updateErrorIsResolved = function (errorId, isResolved, callback) {
+module.exports.updateErrorIsResolved = function (apiId,errorCode,isResolvedCurrent, isResolved, callback) {
 
-    var query = {error_id: errorId};
+    var query = {api_id:apiId,error_code: errorCode,isResolved:isResolvedCurrent};
 
+
+    console.log("MODEL"+apiId+"-"+errorCode+"-"+isResolvedCurrent);
     var update = {
         isResolved: isResolved
     }
 
-    ErrorDetails.updateOne(query, update, callback);
+    ErrorDetails.updateMany(query, update, callback);
 
 }

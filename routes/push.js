@@ -87,17 +87,21 @@ router.get('/api/get_error_list/', function (req, res) {
 });
 
 
-router.put('/api/error_resolved/:errorId', function (req, res) {
+router.put('/api/error_resolved/:api_id/:error_code/:isResolved', function (req, res) {
 
     var reqBody = req.body;
-    var errorId = req.params.errorId;
+    var apiId = req.params.api_id;
+    var errorCode = req.params.error_code;
+    var isResolved = req.params.isResolved;
 
-    ErrorDetails.updateErrorIsResolved(errorId, reqBody.isResolved, function (err, userDetail) {
+    console.log("API"+apiId+"-"+errorCode+"-"+isResolved);
+
+    ErrorDetails.updateErrorIsResolved(apiId, errorCode, isResolved, reqBody.isResolved, function (err, userDetail) {
         if (err) {
             sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
         } else {
             sendResponse.sendSuccessData(userDetail, res);
-            sendErrorResolvedPnToUser(errorId);
+            sendErrorResolvedPnToUser(apiId, errorCode, reqBody.isResolved);
         }
 
     })
@@ -165,7 +169,6 @@ router.get('/api/get_error/:api_id/:error_code/:isResolved', function (req, res)
     var errorCode = req.params.error_code;
     var isResolved = req.params.isResolved;
 
-    console.log(apiId + "-" + errorCode + "-" + isResolved);
 
     ErrorDetails.getErrorDetailSegregate(apiId, errorCode, isResolved, function (err, appDetails) {
         if (err) {
@@ -177,7 +180,7 @@ router.get('/api/get_error/:api_id/:error_code/:isResolved', function (req, res)
 
 });
 
-function sendErrorResolvedPnToUser(errorId) {
+function sendErrorResolvedPnToUser(apiId, errorCode, isResolved) {
 
     // var deviceToken = token;
 
@@ -194,17 +197,31 @@ function sendErrorResolvedPnToUser(errorId) {
         timeToLive: 60 * 60 * 24
     };
 
-
-    ErrorDetails.getErrorDetailById(errorId, function (err, errorDetails) {
+    ErrorDetails.getErrorDetailSegregate(apiId, errorCode, isResolved, function (err, errorDetails) {
         if (err) {
             throw err;
 
         }
-        var deviceToken = errorDetails[0].device_token;
 
-        console.log(deviceToken);
-        FirebasePn.sendFirebasePN(payload, deviceToken, option);
+        for (var i = 0; i < errorDetails.length; i++) {
+            var deviceToken = errorDetails[0].device_token;
+
+            console.log(deviceToken);
+            FirebasePn.sendFirebasePN(payload, deviceToken, option);
+
+        }
+
+
     });
+
+
+    /* ErrorDetails.getErrorDetailById(errorId, function (err, errorDetails) {
+     if (err) {
+     throw err;
+
+     }
+
+     });*/
 
 
 }
