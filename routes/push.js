@@ -49,23 +49,38 @@ router.post('/api/register_app_detail/', function (req, res) {
 
 router.post('/api/catch_error/', function (req, res) {
 
-    var error_detail = req.body;
-    var apiName = error_detail.api_name;
-    var apiId = error_detail.api_id;
-    var errorCode = error_detail.error_code;
-    var isResolved = error_detail.isResolved ? "true" : "false";
+    var error_details = req.body;
+    var apiName = error_details.api_name;
+    var apiId = error_details.api_id;
+    var errorCode = error_details.error_code;
+    var isResolved = error_details.isResolved ? "true" : "false";
 
-    error_detail["isResolved"] = false;
+    var deviceToken = error_details.device_token;
+    var errorId = error_details.error_id;
 
+    ErrorDetails.getErrorDetailByTokenAndErrorId(deviceToken, errorId, function (err, error_detail) {
 
-    ErrorDetails.addErrorDetail(error_detail, function (err, error_detail) {
-        if (err) {
-            sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
+        if (error_detail.length == 0) {
+
+            error_details["isResolved"] = false;
+
+            ErrorDetails.addErrorDetail(error_details, function (err, errorDetail) {
+                if (err) {
+                    sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
+                } else {
+                    sendResponse.sendSuccessData(errorDetail, res);
+                    sendErrorPnToDev(errorId, apiName, apiId, errorCode, isResolved);
+
+                }
+
+            })
+
         } else {
-            sendResponse.sendSuccessData(error_detail, res);
-            sendErrorPnToDev(error_detail.error_id, apiName, apiId, errorCode, isResolved);
+
+            sendResponse.sendErrorMessageAndStatus("Error Already Registered!", GENERAL_ERROR_STATUS, res);
 
         }
+
 
     })
 
@@ -94,7 +109,6 @@ router.put('/api/error_resolved/:api_id/:error_code/:isResolved', function (req,
     var errorCode = req.params.error_code;
     var isResolved = req.params.isResolved;
 
-    console.log("API"+apiId+"-"+errorCode+"-"+isResolved);
 
     ErrorDetails.updateErrorIsResolved(apiId, errorCode, isResolved, reqBody.isResolved, function (err, userDetail) {
         if (err) {

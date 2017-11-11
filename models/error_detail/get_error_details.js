@@ -17,6 +17,14 @@ module.exports.getErrorDetailById = function (errorId, callback) {
     ErrorDetails.find(query, callback);
 }
 
+
+module.exports.getErrorDetailByTokenAndErrorId = function (token, errorId, callback) {
+
+    var query = {error_id: errorId, device_token: token};
+    ErrorDetails.find(query, callback);
+}
+
+
 module.exports.getErrorDetailSegregate = function (apiId, errorCode, isResolved, callback) {
 
     var query = {
@@ -32,12 +40,10 @@ module.exports.addErrorDetail = function (app_detail, callback) {
     ErrorDetails.create(app_detail, callback);
 }
 
-module.exports.updateErrorIsResolved = function (apiId,errorCode,isResolvedCurrent, isResolved, callback) {
+module.exports.updateErrorIsResolved = function (apiId, errorCode, isResolvedCurrent, isResolved, callback) {
 
-    var query = {api_id:apiId,error_code: errorCode,isResolved:isResolvedCurrent};
+    var query = {api_id: apiId, error_code: errorCode, isResolved: isResolvedCurrent};
 
-
-    console.log("MODEL"+apiId+"-"+errorCode+"-"+isResolvedCurrent);
     var update = {
         isResolved: isResolved
     }
