@@ -178,7 +178,7 @@ function sendErrorResolvedPnToUser(errorId) {
             throw err;
 
         }
-        var deviceToken = errorDetails.device_token;
+        var deviceToken = errorDetails[0].device_token;
 
         console.log(deviceToken);
         FirebasePn.sendFirebasePN(payload, deviceToken, option);
