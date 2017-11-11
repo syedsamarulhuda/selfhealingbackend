@@ -59,7 +59,7 @@ router.post('/api/catch_error/', function (req, res) {
             sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
         } else {
             sendResponse.sendSuccessData(error_detail, res);
-            sendErrorPnToDev(error_detail.error_id, error_detail.device_token);
+            sendErrorPnToDev(error_detail.error_id);
 
         }
 
@@ -93,6 +93,7 @@ router.put('/api/error_resolved/:errorId', function (req, res) {
             sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
         } else {
             sendResponse.sendSuccessData(userDetail, res);
+            sendErrorResolvedPnToUser(errorId);
         }
 
     })
@@ -143,7 +144,7 @@ router.get('/api/get_error/:errorId', function (req, res) {
 
     var errorId = req.params.errorId;
 
-    ErrorDetails.getErrorDetailById(errorId,function (err, appDetails) {
+    ErrorDetails.getErrorDetailById(errorId, function (err, appDetails) {
         if (err) {
             throw err;
 
@@ -154,12 +155,42 @@ router.get('/api/get_error/:errorId', function (req, res) {
 });
 
 
+function sendErrorResolvedPnToUser(errorId) {
+
+    // var deviceToken = token;
+
+    var payload = {
+        data: {
+            errorId: "123",
+            title: "Error Resolved!",
+            body: "Please Click  "
+        }
+    };
+
+    var option = {
+        priority: "high",
+        timeToLive: 60 * 60 * 24
+    };
 
 
+    ErrorDetails.getErrorDetailById(errorId, function (err, errorDetails) {
+        if (err) {
+            throw err;
 
-function sendErrorPnToDev(errorId, token) {
+        }
+        var deviceToken = errorDetails.device_token;
 
-    var deviceToken = token;
+        console.log(deviceToken);
+        FirebasePn.sendFirebasePN(payload, deviceToken, option);
+    });
+
+
+}
+
+
+function sendErrorPnToDev(errorId) {
+
+    // var deviceToken = token;
 
     var payload = {
         data: {
@@ -174,7 +205,20 @@ function sendErrorPnToDev(errorId, token) {
         timeToLive: 60 * 60 * 24
     };
 
-    FirebasePn.sendFirebasePN(payload, deviceToken, option);
+
+    DevDetails.devList(function (err, devDetails) {
+        if (err) {
+            throw err;
+
+        }
+
+        for (var i = 0; i < devDetails.length; i++) {
+            console.log(devDetails[i].device_token);
+            FirebasePn.sendFirebasePN(payload, devDetails[i].device_token, option);
+        }
+    })
+
+
 }
 
 

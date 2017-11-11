@@ -16,3 +16,8 @@ module.exports.devSignUp = function (dev_detail, callback) {
     DevDetails.create(dev_detail, callback);
 }
 
+
+module.exports.devList = function (callback) {
+
+    DevDetails.find(callback);
+}

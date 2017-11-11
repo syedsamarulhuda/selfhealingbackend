@@ -32,6 +32,8 @@ app.post('/api/dev_sign_up/', push);
 
 app.post('/api/dev_login/', push);
 
+app.get('/api/dev_list/',push);
+
 
 app.listen(8000, '0.0.0.0', function () {
     console.log('Listening to port:  ' + 8000);
