@@ -33,13 +33,26 @@ router.post('/api/register_app_detail/', function (req, res) {
 
     app_detail["app_id"] = appUniqueId;
 
+    var deviceToken = app_detail.device_token;
 
-    AppDetails.addAppDetail(app_detail, function (err, app_detail) {
-        if (err) {
-            sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
+    AppDetails.getAppDetailByToken(deviceToken, function (err, appDetail) {
+
+        if (appDetail.length == 0) {
+            AppDetails.addAppDetail(app_detail, function (err, app_detail) {
+                if (err) {
+                    sendResponse.sendErrorMessageAndStatus(err, GENERAL_ERROR_STATUS, res);
+                } else {
+                    sendResponse.sendSuccessData(app_detail, res);
+                }
+
+            })
+
         } else {
-            sendResponse.sendSuccessData(app_detail, res);
+
+            sendResponse.sendErrorMessageAndStatus("App With This Device Token Already Exists!", GENERAL_ERROR_STATUS, res);
+
         }
+
 
     })
 
@@ -183,13 +196,41 @@ router.get('/api/get_error/:api_id/:error_code/:isResolved', function (req, res)
     var errorCode = req.params.error_code;
     var isResolved = req.params.isResolved;
 
+    var errorAndAppDetail;
 
-    ErrorDetails.getErrorDetailSegregate(apiId, errorCode, isResolved, function (err, appDetails) {
+
+    ErrorDetails.getErrorDetailAndAppDetails(apiId, errorCode, isResolved, function (err, errorDetails) {
         if (err) {
             throw err;
-
         }
-        sendResponse.sendSuccessData(appDetails, res);
+
+
+        /*for (var i = 0; i < errorDetails.length; i++) {
+
+            console.log("ERROR-TOKEN - " + errorDetails[i].device_token);
+
+            AppDetails.getAppDetailByToken(errorDetails[i].device_token, function (err, appDetail) {
+
+                if (err) {
+                    throw err;
+                }
+                console.log("ERROR-DEVICE- " + appDetail[0].device_model);
+
+
+                /!* errorAndAppDetail = {
+                    app_name: appDetail[0].app_name,
+                    app_version: appDetail[0].app_version,
+                    device_model: appDetail[0].device_model,
+                    os_version: appDetail[0].os_version,
+                    platform: appDetail[0].platform
+                };
+*!/
+
+            })
+
+
+        }*/
+        sendResponse.sendSuccessData(errorDetails, res);
     })
 
 });
@@ -218,25 +259,15 @@ function sendErrorResolvedPnToUser(apiId, errorCode, isResolved) {
         }
 
         for (var i = 0; i < errorDetails.length; i++) {
-            var deviceToken = errorDetails[0].device_token;
+            var deviceToken = errorDetails[i].device_token;
 
-            console.log(deviceToken);
+            console.log("USER TOKEN - " + deviceToken);
+
             FirebasePn.sendFirebasePN(payload, deviceToken, option);
-
         }
 
 
     });
-
-
-    /* ErrorDetails.getErrorDetailById(errorId, function (err, errorDetails) {
-     if (err) {
-     throw err;
-
-     }
-
-     });*/
-
 
 }
 
@@ -270,7 +301,6 @@ function sendErrorPnToDev(errorId, apiName, apiId, errorCode, isResolved) {
         }
 
         for (var i = 0; i < devDetails.length; i++) {
-            console.log(devDetails[i].device_token);
             FirebasePn.sendFirebasePN(payload, devDetails[i].device_token, option);
         }
     })

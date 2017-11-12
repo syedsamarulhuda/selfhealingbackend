@@ -5,6 +5,8 @@
 
 var mongoose = require('mongoose');
 
+var Schema = mongoose.Schema;
+
 var dbConfig = config.get('MongoDatabaseSettings');
 
 /*var mongoString = dbConfig.host + dbConfig.port + "/" + dbConfig.database;
@@ -21,7 +23,7 @@ mongoose.createConnection('mongodb://' + dbConfig.username + ':' + dbConfig.pass
 
 var db = mongoose.connection;
 
-var errorDetailSchema = mongoose.Schema(
+var errorDetailSchema = Schema(
     {
         error_id: {
             type: String,
@@ -61,6 +63,11 @@ var errorDetailSchema = mongoose.Schema(
             type: Boolean,
             required: true
         },
+        app_details: [
+            {type: Schema.Types.ObjectId, ref: 'app_details'}
+
+        ],
+
         create_date: {
 
             type: Date,

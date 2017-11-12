@@ -3,6 +3,7 @@
  */
 
 var ErrorDetails = require('./error_detail_schema');
+var AppDetails= require('../app_detail/application_detail_schema')
 
 
 module.exports.getErrorDetail = function (callback) {
@@ -34,6 +35,19 @@ module.exports.getErrorDetailSegregate = function (apiId, errorCode, isResolved,
     };
     ErrorDetails.find(query, callback);
 }
+
+
+
+module.exports.getErrorDetailAndAppDetails = function (apiId, errorCode, isResolved, callback) {
+
+    var query = {
+        api_id: apiId,
+        isResolved: isResolved,
+        error_code: errorCode
+    };
+    ErrorDetails.find(query, callback).populate('app', 'device_model');
+}
+
 
 
 module.exports.addErrorDetail = function (app_detail, callback) {
