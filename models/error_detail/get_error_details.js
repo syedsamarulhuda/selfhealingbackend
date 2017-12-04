@@ -57,7 +57,7 @@ module.exports.getErrorDetailAndAppDetails = function (apiId, errorCode, isResol
 
     ErrorDetails.aggregate([{
         "$lookup": {
-            from: "error_details",
+            from: "app_details",
             localField: "device_token",
             foreignField: "device_token",
             as: "app_detail"
