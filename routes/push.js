@@ -9,6 +9,7 @@ var sendResponse = require('./sendResponse');
 var AppDetails = require('../models/app_detail/get_app_details');
 var ErrorDetails = require('../models/error_detail/get_error_details');
 var FirebasePn = require('../models/firebase/firebase_send_pn');
+//var FirebaseServerKeyPn = require('../models/firebase/firebase_send_by_server_key');
 var DevDetails = require('../models/dev_detail/get_dev_detail')
 
 
@@ -301,7 +302,9 @@ function sendErrorPnToDev(errorId, apiName, apiId, errorCode, isResolved) {
         }
 
         for (var i = 0; i < devDetails.length; i++) {
-            FirebasePn.sendFirebasePN(payload, devDetails[i].device_token, option);
+            //FirebasePn.sendFirebasePN(payload, devDetails[i].device_token, option);
+
+            FirebasePn.sendFirebasePN(payload, devDetails[i].device_token, option)
         }
     })
 

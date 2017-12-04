@@ -5,6 +5,7 @@
 
 var mongoose = require('mongoose');
 
+
 var Schema = mongoose.Schema;
 
 var dbConfig = config.get('MongoDatabaseSettings');
@@ -63,11 +64,6 @@ var errorDetailSchema = Schema(
             type: Boolean,
             required: true
         },
-        app_details: [
-            {type: Schema.Types.ObjectId, ref: 'app_details'}
-
-        ],
-
         create_date: {
 
             type: Date,

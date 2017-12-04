@@ -3,12 +3,27 @@
  */
 
 var ErrorDetails = require('./error_detail_schema');
-var AppDetails= require('../app_detail/application_detail_schema')
 
 
 module.exports.getErrorDetail = function (callback) {
 
-    ErrorDetails.find(callback);
+    //ErrorDetails.find(callback);
+  /*  ErrorDetails.aggregate([{"$match":{"error_code":500}},{"$lookup":
+    {
+        from: "app_details",
+        localField: "device_token",
+        foreignField: "device_token",
+        as: "app_details_info"
+    }},{"$match":{"app_details_info.os_version":{"$ne":"N"}}}],callback);*/
+
+
+    ErrorDetails.aggregate([{"$lookup":
+    {
+        from: "app_details",
+        localField: "device_token",
+        foreignField: "device_token",
+        as: "app_details_info"
+    }}],callback);
 }
 
 
@@ -40,12 +55,22 @@ module.exports.getErrorDetailSegregate = function (apiId, errorCode, isResolved,
 
 module.exports.getErrorDetailAndAppDetails = function (apiId, errorCode, isResolved, callback) {
 
-    var query = {
+    ErrorDetails.aggregate([{
+        "$lookup": {
+            from: "error_details",
+            localField: "device_token",
+            foreignField: "device_token",
+            as: "app_detail"
+        }
+    }], callback);
+
+
+   /* var query = {
         api_id: apiId,
         isResolved: isResolved,
         error_code: errorCode
     };
-    ErrorDetails.find(query, callback).populate('app', 'device_model');
+    ErrorDetails.find(query, callback);*/
 }
 
 
